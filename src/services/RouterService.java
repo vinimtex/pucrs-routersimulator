@@ -22,8 +22,9 @@ public abstract class RouterService {
 			
 		receiver = new Receiver();
 		receiver.start();
-		
+		System.out.println("Continua?");
 		sender = new Sender();
+		
 		sender.start();
 			
 	}

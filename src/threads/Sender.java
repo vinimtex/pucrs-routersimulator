@@ -28,14 +28,17 @@ public class Sender extends Thread{
 			
 		}
 		
+		
 		this.sendMsg("!"); // envia aviso que o roteador entrou na rede
        
 	}
 	
 	public void run() {
+		
 		this.running = true;
 		System.out.println("Enviando na porta 5000");
 		while(running) {
+			
 			
 			if(MainApp.ipList.size() > 0) {
 				for(String ip: MainApp.ipList) {
@@ -63,6 +66,7 @@ public class Sender extends Thread{
 	}
 	
 	public void sendMsg(String msg) {
+		
 		for(String ip: MainApp.ipList) {
 			
 			try {
@@ -71,9 +75,6 @@ public class Sender extends Thread{
 				buf = msg.getBytes();
 		        DatagramPacket packet = new DatagramPacket(buf, buf.length, destinationIp, 5000);
 		        RouterService.socket.send(packet);
-		        packet = new DatagramPacket(buf, buf.length);
-		        RouterService.socket.receive(packet);
-		        
 		        System.out.println("Mensagem: " + msg + "  - Foi enviada para o IP: " + ip);
 			} catch(IOException e) {
 				e.printStackTrace();

@@ -9,7 +9,7 @@ public class MainApp {
 	public static List<String> ipList = new ArrayList<>();
 	
 	public static void main(String[] args) {
-		ipList.add("127.5.2.1");
+		ipList.add("localhost");
 		
 		RouterService.startRouter("MEU_IP");
 		
