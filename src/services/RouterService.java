@@ -70,6 +70,7 @@ public abstract class RouterService {
 			} else {
 				router.getRouterTable().addRow(new RouterTableRow(destinationIp, metric, gatewayIp));
 			}
+			
 		}
 
 	}
@@ -89,17 +90,26 @@ public abstract class RouterService {
 		return routerTable;
 	}
 	
+	public static void sendRouterTableNow() {
+
+		try {
+			wakeUpSenderThread();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private static void wakeUpSenderThread() throws InterruptedException {
+		senderThread.interrupt();
+	}
+	
 	public static void messageReceived(String msg, String source) {
 		msg = sanatizeMessage(msg);
 		if(validateMessage(msg)) {
 			
 			if(msg.length() == 1) {
-				try {
-					senderThread.notify();
-				} catch(Exception e) {
-					System.out.println("Thread não está dormindo");
-				}
-				
+				sendRouterTableNow();
 			} else {
 				String[] tuples = msg.substring(1).split("\\*");
 				
@@ -111,7 +121,7 @@ public abstract class RouterService {
 					int metric = Integer.parseInt(row[1]);
 					
 					addRowToRouterTable(destinationIp, metric, source);
-						
+					sendRouterTableNow();
 				}
 			}
 			

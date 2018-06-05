@@ -27,7 +27,7 @@ public class RemoveOutdatedRows implements Runnable {
 					if(row.getUpdatedAt().until(LocalDateTime.now(), ChronoUnit.SECONDS) > 30) {
 						System.out.println("REMOVENDO IP " + row.getDestinationIp() + " POR FALTA DE ATUALIZAÇÃO");
 						RouterService.router.getRouterTable().removeRow(row);
-						//iterator.remove();
+						RouterService.sendRouterTableNow();
 					}
 				}
 			}

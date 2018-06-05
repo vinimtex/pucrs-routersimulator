@@ -29,7 +29,6 @@ public class Receiver implements Runnable {
 		
 		System.out.println("Escutando na porta 5000");
 		while(running) {
-			System.out.println("recebendo");
 			try {
 				byte[] buf = new byte[1024];
 				DatagramPacket packet = new DatagramPacket(buf, buf.length);

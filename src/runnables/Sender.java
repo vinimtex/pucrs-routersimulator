@@ -39,8 +39,8 @@ public class Sender implements Runnable{
 			
 			try {
 				Thread.sleep(10000); // aguarda 10 segundos para enviar novamente
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
+			} catch (InterruptedException e) {
+				System.out.println("Tabela foi enviada imediatamente");
 			}
 				
 		}
