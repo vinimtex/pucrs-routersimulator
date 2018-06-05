@@ -1,4 +1,4 @@
-package threads;
+package runnables;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,13 +9,10 @@ import java.net.SocketException;
 import appRouterSimulator.MainApp;
 import services.RouterService;
 
-public class Sender extends Thread{
+public class Sender implements Runnable{
 	
     private boolean running;
     
-    private byte[] buf;
-	
-	
 	public Sender() {
 		
 		if(RouterService.socket == null) {
@@ -27,55 +24,39 @@ public class Sender extends Thread{
 			}
 			
 		}
-		
-		
+		this.running = true;
 		this.sendMsg("!"); // envia aviso que o roteador entrou na rede
        
 	}
 	
-	public void run() {
+	@Override
+	public synchronized void run() {
 		
-		this.running = true;
 		System.out.println("Enviando na porta 5000");
 		while(running) {
 			
+			this.sendRouterTable();
 			
-			if(MainApp.ipList.size() > 0) {
-				for(String ip: MainApp.ipList) {
-					try {
-						InetAddress destinationIp = InetAddress.getByName(ip);
-						
-						String msg = "bombanderson";
-						buf = msg.getBytes();
-				        DatagramPacket packet = new DatagramPacket(buf, buf.length, destinationIp, 5000);
-				        RouterService.socket.send(packet);
-				        System.out.println("Pacote enviado para o IP: " + ip);
-				        
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			} else {
-				System.out.println("Lista de IP Vazia");
-				this.running = false;
+			try {
+				Thread.sleep(10000); // aguarda 10 segundos para enviar novamente
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
 			}
-			
-			
-			
+				
 		}
 	}
 	
-	public void sendMsg(String msg) {
+	public synchronized void sendMsg(String msg) {
 		
 		for(String ip: MainApp.ipList) {
 			
 			try {
 				InetAddress destinationIp = InetAddress.getByName(ip);
-				
-				buf = msg.getBytes();
+				byte[] buf = msg.getBytes();
 		        DatagramPacket packet = new DatagramPacket(buf, buf.length, destinationIp, 5000);
 		        RouterService.socket.send(packet);
-		        System.out.println("Mensagem: " + msg + "  - Foi enviada para o IP: " + ip);
+		        System.out.println("MENSAGEM ENVIADA:" + msg);
+		        System.out.println("MENSAGEM ENVIADA DESTINO:" + ip);
 			} catch(IOException e) {
 				e.printStackTrace();
 			}
@@ -83,5 +64,9 @@ public class Sender extends Thread{
 			
 		}
 		
+	}
+	
+	public synchronized void sendRouterTable() {
+		this.sendMsg(RouterService.routerTableStringfy());
 	}
 }

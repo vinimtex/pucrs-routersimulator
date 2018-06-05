@@ -1,17 +1,18 @@
-package threads;
+package runnables;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
+
 import services.RouterService;
 
-public class Receiver extends Thread {
+public class Receiver implements Runnable {
 	
 	private boolean running;
-	private byte[] buf = new byte[256];
-	
+
 	public Receiver() {
 		
 		if(RouterService.socket == null) {
@@ -21,18 +22,26 @@ public class Receiver extends Thread {
 				e.printStackTrace();
 			}
 		}
+		this.running = true;
 	}
 	
 	public void run() {
-		this.running = true;
-		System.out.println("Escutando na porta 5000 por pacotes");
+		
+		System.out.println("Escutando na porta 5000");
 		while(running) {
+			System.out.println("recebendo");
 			try {
+				byte[] buf = new byte[1024];
 				DatagramPacket packet = new DatagramPacket(buf, buf.length);
 				RouterService.socket.receive(packet);
 				InetAddress address = packet.getAddress();
 				int port = packet.getPort();
-				System.out.println("Pacote recebido do ip " + address.toString() + ":" + port);
+				System.out.println("Pacote recebido do ip " + address.getHostAddress() + ":" + port);
+				
+				String data = new String(packet.getData(), StandardCharsets.UTF_8);
+				
+				RouterService.messageReceived(data, address.getHostAddress());
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

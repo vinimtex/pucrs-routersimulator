@@ -1,12 +1,13 @@
 package models;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class RouterTable {
 	
-	private List<RouterTableRow> rows;
+	private CopyOnWriteArrayList<RouterTableRow> rows;
 	
-	public RouterTable() { this.rows = new ArrayList<>();}
+	public RouterTable() { this.rows = new CopyOnWriteArrayList<>();}
 	
 	public void addRow(RouterTableRow row) {
 		this.rows.add(row);
@@ -19,6 +20,9 @@ public class RouterTable {
 	public void removeRowByIndex(int index) {
 		this.rows.remove(index);
 	}
-	
+
+	public List<RouterTableRow> getRows() {
+		return rows;
+	}
 
 }
