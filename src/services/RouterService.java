@@ -49,23 +49,15 @@ public abstract class RouterService {
 		
 		if(destinationIp != router.getIp()) {
 			if(router.getRouterTable().getRows().size() > 0) {
-				
-				while( iterator.hasNext() ) {
-					RouterTableRow row = iterator.next();
-					
-					if(destinationIp.equals(row.getDestinationIp())) {
-						
-						if(metric < row.getMetric()) {
-							row.setGatewayIp(gatewayIp);
-						}
+								
+					RouterTableRow row = ThereIsOnlist(destinationIp);
+					if(row == null) 				
+						router.getRouterTable().addRow(new RouterTableRow(destinationIp, metric, gatewayIp));						
+					else {						
+						if(metric < row.getMetric())
+							row.setGatewayIp(gatewayIp);						
 						row.setMetric(row.getMetric() + 1);
-						
-					} else {
-						
-						router.getRouterTable().addRow(new RouterTableRow(destinationIp, metric, gatewayIp));
-						
-					}
-				}
+					}	
 			
 			} else {
 				router.getRouterTable().addRow(new RouterTableRow(destinationIp, metric, gatewayIp));
@@ -75,6 +67,23 @@ public abstract class RouterService {
 
 	}
 	
+	public static RouterTableRow ThereIsOnlist(String destinationIp) {
+		
+		RouterTableRow row;
+		Iterator<RouterTableRow> iterator = router.getRouterTable().getRows().iterator();
+		
+		if(router.getRouterTable().getRows().size() > 0) {
+		
+			while( iterator.hasNext() ) {
+				row = iterator.next();								
+				if(destinationIp.equals(row.getDestinationIp())){						
+						return row;
+				}
+			}
+		}		
+		return null;
+	}
+	
 	public static String routerTableStringfy() {
 		String routerTable = "";
 		
@@ -82,7 +91,7 @@ public abstract class RouterService {
 			for(RouterTableRow row : router.getRouterTable().getRows()) {
 				routerTable += "*"; // inicio de uma linha na tabela
 				routerTable += row.getDestinationIp();
-				routerTable += ";"; // separador do ip/mÈtrica 
+				routerTable += ";"; // separador do ip/m√©trica 
 				routerTable += row.getMetric();
 			}
 		}
@@ -105,6 +114,19 @@ public abstract class RouterService {
 	}
 	
 	public static void messageReceived(String msg, String source) {
+		
+		boolean flag = false;
+		for(String ip : MainApp.ipList) {
+				if(ip.equals(source)) {
+					flag = true;
+					break;
+				}
+		}
+		if(!flag) {
+			System.out.println("Adicionou o IP:"+source);
+			MainApp.ipList.add(source);
+		}
+		
 		msg = sanatizeMessage(msg);
 		if(validateMessage(msg)) {
 			
@@ -121,7 +143,7 @@ public abstract class RouterService {
 					int metric = Integer.parseInt(row[1]);
 					
 					addRowToRouterTable(destinationIp, metric, source);
-					sendRouterTableNow();
+					//sendRouterTableNow();
 				}
 			}
 			
@@ -138,14 +160,14 @@ public abstract class RouterService {
 	
 	public static boolean validateMessage(String msg) {
 		if(msg.length() <= 0 || msg == null) {
-			System.out.println("MENSAGEM INV¡LIDA: Mensagem vazia");
+			System.out.println("MENSAGEM INV√ÅLIDA: Mensagem vazia");
 			return false;
 		}
 			
 					
 		if(msg.length() == 1) {
 			if(msg.charAt(0) != '!') {
-				System.out.println("MENSAGEM INV¡LIDA: Mensagem de tamanho 1 inv·lida, n„o È um '!' (An˙ncio de roteador) ");
+				System.out.println("MENSAGEM INV√ÅLIDA: Mensagem de tamanho 1 inv√°lida, n√£o √© um '!' (An√∫ncio de roteador) ");
 				return false;
 			}
 		}
@@ -153,7 +175,7 @@ public abstract class RouterService {
 		
 		if(msg.length() > 1) {
 			if(msg.charAt(0) != '*') {
-				System.out.println("MENSAGEM INV¡LIDA: Indicador de tupla '*' n„o encontrado na primeira posiÁ„o.");
+				System.out.println("MENSAGEM INV√ÅLIDA: Indicador de tupla '*' n√£o encontrado na primeira posi√ß√£o.");
 				return false;
 			} else {				
 				String[] tuples = msg.substring(1).split("\\*");
@@ -163,7 +185,7 @@ public abstract class RouterService {
 					String[] rowInfo = tuple.split(";");
 					
 					if(rowInfo.length != 2) {
-						System.out.println("MENSAGEM INV¡LIDA: Separado de tupla, ip e mÈtrica n„o encontrado ou inv·lido");
+						System.out.println("MENSAGEM INV√ÅLIDA: Separado de tupla, ip e m√©trica n√£o encontrado ou inv√°lido");
 						return false;
 					}
 						
@@ -174,21 +196,21 @@ public abstract class RouterService {
 					String[] ipParts = destinationIp.split("\\.");
 					
 					if(ipParts.length != 4) {
-						System.out.println("TUPLA INV¡LIDA: IP Inv·lido");
+						System.out.println("TUPLA INV√ÅLIDA: IP Inv√°lido");
 						return false;
 					}
 						
 					
 					for(String ip: ipParts) {
 						if(Integer.parseInt(ip) < 0 || Integer.parseInt(ip) > 255) {
-							System.out.println("TUPLA INV¡LIDA: IP Inv·lido fora da faixa 0-255");
+							System.out.println("TUPLA INV√ÅLIDA: IP Inv√°lido fora da faixa 0-255");
 							return false;
 						}
 							
 					}
 					
 					if(Integer.parseInt(metric) <= 0) {
-						System.out.println("TUPLA INV¡LIDA: MÈtrica 0 ou negativa");
+						System.out.println("TUPLA INV√ÅLIDA: M√©trica 0 ou negativa");
 						return false;
 					}
 						
@@ -197,7 +219,7 @@ public abstract class RouterService {
 				
 			}
 		}
-		System.out.println("MENSAGEM V¡LIDA:" + msg);
+		System.out.println("MENSAGEM V√ÅLIDA:" + msg);
 		
 		return true;
 	}
