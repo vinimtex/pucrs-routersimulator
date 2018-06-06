@@ -16,8 +16,6 @@ public class RemoveOutdatedRows implements Runnable {
 	@Override
 	public void run() {
 		
-		
-		
 		while(true) {
 			Iterator<RouterTableRow> iterator = RouterService.router.getRouterTable().getRows().iterator();
 			while(iterator.hasNext()) {

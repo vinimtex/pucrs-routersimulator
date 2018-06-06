@@ -39,24 +39,31 @@ public abstract class RouterService {
 	
 	public static void initialRouterTable() {
 		for(String ip: MainApp.ipList) {
-			addRowToRouterTable(ip, 1, router.getIp());
+			addRowToRouterTable(ip, 1, ip);
 		}
 	}
 	
 	public static void addRowToRouterTable(String destinationIp, int metric, String gatewayIp) {
 		
-		Iterator<RouterTableRow> iterator = router.getRouterTable().getRows().iterator();
-		
-		if(destinationIp != router.getIp()) {
+		if(!destinationIp.equals(router.getIp())) {
 			if(router.getRouterTable().getRows().size() > 0) {
 								
 					RouterTableRow row = ThereIsOnlist(destinationIp);
-					if(row == null) 				
-						router.getRouterTable().addRow(new RouterTableRow(destinationIp, metric, gatewayIp));						
-					else {						
-						if(metric < row.getMetric())
-							row.setGatewayIp(gatewayIp);						
-						row.setMetric(row.getMetric() + 1);
+					if(row == null) {
+						if(destinationIp.equals(gatewayIp)) {
+							router.getRouterTable().addRow(new RouterTableRow(destinationIp, metric, gatewayIp));
+						} else {
+							router.getRouterTable().addRow(new RouterTableRow(destinationIp, metric+1, gatewayIp));
+						}
+					} else {						
+						
+						if(!gatewayIp.equals(row.getGatewayIp())) {
+							if(metric < row.getMetric()) {
+								row.setGatewayIp(gatewayIp);
+								row.setMetric(metric + 1);
+							}
+						}
+						
 					}	
 			
 			} else {
@@ -64,6 +71,15 @@ public abstract class RouterService {
 			}
 			
 		}
+		
+		System.out.println("============ TABELA DE ROTEAMENTO ===========");
+		System.out.println("IP               METRICA     SAIDA           ");
+		for(RouterTableRow row: router.getRouterTable().getRows()) {
+			System.out.println(row.getDestinationIp() + "  " + row.getMetric() + "           " + row.getGatewayIp());
+			
+		}
+		System.out.println("============ FIM TABELA DE ROTEAMENTO ======");
+		
 
 	}
 	
@@ -91,7 +107,7 @@ public abstract class RouterService {
 			for(RouterTableRow row : router.getRouterTable().getRows()) {
 				routerTable += "*"; // inicio de uma linha na tabela
 				routerTable += row.getDestinationIp();
-				routerTable += ";"; // separador do ip/métrica 
+				routerTable += ";"; // separador do ip/mÃ©trica 
 				routerTable += row.getMetric();
 			}
 		}
@@ -114,7 +130,11 @@ public abstract class RouterService {
 	}
 	
 	public static void messageReceived(String msg, String source) {
-		
+		/*
+		 * @TODO
+		 * Quando receber um pacote de determinado IP atualizar o updatedAt deste ip na tabela de roteamento
+		 * para não ser removido dentro de 30 segundos
+		 */
 		boolean flag = false;
 		for(String ip : MainApp.ipList) {
 				if(ip.equals(source)) {
@@ -125,6 +145,7 @@ public abstract class RouterService {
 		if(!flag) {
 			System.out.println("Adicionou o IP:"+source);
 			MainApp.ipList.add(source);
+			addRowToRouterTable(source, 1, source);
 		}
 		
 		msg = sanatizeMessage(msg);
@@ -196,14 +217,14 @@ public abstract class RouterService {
 					String[] ipParts = destinationIp.split("\\.");
 					
 					if(ipParts.length != 4) {
-						System.out.println("TUPLA INVÁLIDA: IP Inválido");
+						System.out.println("TUPLA INVÁLIDA: IP inválido");
 						return false;
 					}
 						
 					
 					for(String ip: ipParts) {
 						if(Integer.parseInt(ip) < 0 || Integer.parseInt(ip) > 255) {
-							System.out.println("TUPLA INVÁLIDA: IP Inválido fora da faixa 0-255");
+							System.out.println("TUPLA INVÁLIDA: IP fora da faixa 0-255");
 							return false;
 						}
 							

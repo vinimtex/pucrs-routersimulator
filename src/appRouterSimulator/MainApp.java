@@ -13,7 +13,7 @@ import services.RouterService;
 
 public class MainApp {
 	
-	public final static String PathIPList = "C:\\Users\\João França\\Desktop\\pucrs-routersimulator\\src\\appRouterSimulator\\IPList.txt";
+	public final static String PathIPList = "IPList.txt";
 	
 	public static List<String> ipList = new ArrayList<>();
 	
@@ -21,12 +21,7 @@ public class MainApp {
 		
 		ReadIPList();
 		
-		try {
-			RouterService.startRouter(InetAddress.getLocalHost().getHostAddress());
-			
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+		RouterService.startRouter("192.168.1.110");
 		
 	}
 
