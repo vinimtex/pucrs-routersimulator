@@ -129,6 +129,14 @@ public abstract class RouterService {
 		senderThread.interrupt();
 	}
 	
+	private static void updateAtRouterTableRow(String gatewayIp) {
+		for(RouterTableRow row: router.getRouterTable().getRows()) {
+			if(row.getGatewayIp().equals(gatewayIp)) {
+				row.setGatewayIp(gatewayIp);
+			}
+		}
+	}
+	
 	public static void messageReceived(String msg, String source) {
 		/*
 		 * @TODO
@@ -139,6 +147,7 @@ public abstract class RouterService {
 		for(String ip : MainApp.ipList) {
 				if(ip.equals(source)) {
 					flag = true;
+					updateAtRouterTableRow(source);
 					break;
 				}
 		}
