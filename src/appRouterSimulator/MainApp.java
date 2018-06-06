@@ -21,7 +21,10 @@ public class MainApp {
 		
 		ReadIPList();
 		
-		RouterService.startRouter("192.168.1.110");
+		/*
+		 * COLOQUE SEU IP
+		 */
+		RouterService.startRouter("MEU_IP");
 		
 	}
 
