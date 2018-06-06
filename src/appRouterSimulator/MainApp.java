@@ -21,10 +21,11 @@ public class MainApp {
 		
 		ReadIPList();
 		
-		/*
-		 * COLOQUE SEU IP
-		 */
-		RouterService.startRouter("MEU_IP");
+		Scanner sc = new Scanner(System.in);
+		System.out.print("Digite seu IP:");
+		String ip = sc.nextLine();
+		
+		RouterService.startRouter(ip);
 		
 	}
 
