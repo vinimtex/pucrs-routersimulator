@@ -4,6 +4,7 @@ import java.net.DatagramSocket;
 import java.util.Iterator;
 
 import appRouterSimulator.MainApp;
+import appRouterSimulator.models.RouterTableModel;
 import models.Router;
 import models.RouterTableRow;
 import runnables.Receiver;
@@ -80,6 +81,8 @@ public abstract class RouterService {
 		}
 		System.out.println("============ FIM TABELA DE ROTEAMENTO ======");
 		
+		updateRouterTableModelView();
+		
 
 	}
 	
@@ -135,6 +138,8 @@ public abstract class RouterService {
 				row.setGatewayIp(gatewayIp);
 			}
 		}
+		
+		updateRouterTableModelView();
 	}
 	
 	public static void messageReceived(String msg, String source) {
@@ -252,6 +257,10 @@ public abstract class RouterService {
 		System.out.println("MENSAGEM VÁLIDA:" + msg);
 		
 		return true;
+	}
+	
+	public static void updateRouterTableModelView() {
+		RouterTableModel.getInstance().updateData();
 	}
 	
 }

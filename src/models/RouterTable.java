@@ -2,6 +2,7 @@ package models;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 public class RouterTable {
 	
@@ -21,7 +22,8 @@ public class RouterTable {
 		this.rows.remove(index);
 	}
 
-	public List<RouterTableRow> getRows() {
+	public CopyOnWriteArrayList<RouterTableRow> getRows() {
+		rows.stream().filter(row -> row.isSoftDeleted() == false).collect(Collectors.toList());
 		return rows;
 	}
 

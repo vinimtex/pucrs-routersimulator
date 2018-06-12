@@ -3,7 +3,6 @@ package runnables;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
-
 import models.RouterTableRow;
 import services.RouterService;
 
@@ -22,11 +21,18 @@ public class RemoveOutdatedRows implements Runnable {
 				
 				RouterTableRow row = iterator.next();
 				if(row.getDestinationIp() != RouterService.router.getIp()) {
-					if(row.getUpdatedAt().until(LocalDateTime.now(), ChronoUnit.SECONDS) > 30) {
-						System.out.println("REMOVENDO IP " + row.getDestinationIp() + " POR FALTA DE ATUALIZAÇÃO");
-						RouterService.router.getRouterTable().removeRow(row);
-						RouterService.sendRouterTableNow();
+					if(!row.isSoftDeleted()) {
+						if(row.getUpdatedAt().until(LocalDateTime.now(), ChronoUnit.SECONDS) > 30) {
+							System.out.println("REMOVENDO IP " + row.getDestinationIp() + " POR FALTA DE ATUALIZAÇÃO");
+							row.softDelete();
+							RouterService.sendRouterTableNow();
+							RouterService.updateRouterTableModelView();
+						}
+					} else {
+						if(row.getUpdatedAt().until(LocalDateTime.now(), ChronoUnit.SECONDS) > 120)
+							RouterService.router.getRouterTable().removeRow(row);
 					}
+					
 				}
 			}
 			
