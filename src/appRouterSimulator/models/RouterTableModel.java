@@ -46,8 +46,8 @@ public class RouterTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int row, int column) {
-		return null;
-		/*if(RouterService.router != null) {
+		
+		if(RouterService.router != null) {
 			RouterTableRow r = RouterService.router.getRouterTable().getRows().get(row);
 	
 	        if (column == COL_DESTINO) {
@@ -61,7 +61,9 @@ public class RouterTableModel extends AbstractTableModel {
 	        } else if (column == COL_UPDATEDAT) {
 	        	return r.getUpdatedAtFormated();
 	        }
-		}*/
+		}
+		
+		return null;
 		
 		
 	}
