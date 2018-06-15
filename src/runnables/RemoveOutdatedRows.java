@@ -24,7 +24,20 @@ public class RemoveOutdatedRows implements Runnable {
 					if(!row.isSoftDeleted()) {
 						if(row.getUpdatedAt().until(LocalDateTime.now(), ChronoUnit.SECONDS) > 30) {
 							System.out.println("REMOVENDO IP " + row.getDestinationIp() + " POR FALTA DE ATUALIZAÇÃO");
-							row.softDelete();
+							//row.softDelete();
+							RouterService.router.getRouterTable().removeRow(row);
+							RouterService.sendRouterTableNow();
+							RouterService.updateRouterTableModelView();
+						}
+					}
+					
+					/*
+					 * 
+					 * if(!row.isSoftDeleted()) {
+						if(row.getUpdatedAt().until(LocalDateTime.now(), ChronoUnit.SECONDS) > 30) {
+							System.out.println("REMOVENDO IP " + row.getDestinationIp() + " POR FALTA DE ATUALIZAÇÃO");
+							//row.softDelete();
+							RouterService.router.getRouterTable().removeRow(row);
 							RouterService.sendRouterTableNow();
 							RouterService.updateRouterTableModelView();
 						}
@@ -32,6 +45,10 @@ public class RemoveOutdatedRows implements Runnable {
 						if(row.getUpdatedAt().until(LocalDateTime.now(), ChronoUnit.SECONDS) > 120)
 							RouterService.router.getRouterTable().removeRow(row);
 					}
+					 * 
+					 * 
+					 * 
+					 */
 					
 				}
 			}

@@ -74,7 +74,7 @@ public abstract class RouterService {
 		}
 		
 		System.out.println("============ TABELA DE ROTEAMENTO ===========");
-		System.out.println("IP               METRICA     SAIDA           ");
+		System.out.println("IP               METRICA     SAÍDA           ");
 		for(RouterTableRow row: router.getRouterTable().getRows()) {
 			System.out.println(row.getDestinationIp() + "  " + row.getMetric() + "           " + row.getGatewayIp());
 			
