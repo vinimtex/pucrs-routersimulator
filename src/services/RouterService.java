@@ -46,7 +46,11 @@ public abstract class RouterService {
 	
 	public static void addRowToRouterTable(String destinationIp, int metric, String gatewayIp) {
 		
+		if(!destinationIp.equals("127.0.0.1") && !destinationIp.equals("") && destinationIp.length() > 0){	
+		
 		if(!destinationIp.equals(router.getIp())) {
+			
+			
 			if(router.getRouterTable().getRows().size() > 0) {
 								
 					RouterTableRow row = ThereIsOnlist(destinationIp);
@@ -82,6 +86,8 @@ public abstract class RouterService {
 		System.out.println("============ FIM TABELA DE ROTEAMENTO ======");
 		
 		updateRouterTableModelView();
+		
+	}
 		
 
 	}
